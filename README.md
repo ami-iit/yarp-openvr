@@ -1,6 +1,7 @@
-## yarp-openvr-trackers
+## yarp-openvr
 
-YARP OpenVR Trackers project allows to stream OpenVR based tracker poses over a YARP Frame Transform Server.
+YARP OpenVR project contains:
+- ``yarp-openvr-trackers`` that streams OpenVR based tracker poses over a YARP Frame Transform Server.
 
 
 
@@ -17,7 +18,7 @@ This can be enabled by clicking on the `Modify` button in the installer correspo
 - After installation, either create a Steam account or use an existing one to log-in and install [**SteamVR**](https://store.steampowered.com/app/250820/SteamVR/).
 
 ### Install robotology-superbuild
-We rely on [**YARP**](https://www.yarp.it/latest/) for the use of [**yarp-openvr-trackers**](https://github.com/ami-iit/yarp-openvr-trackers). If `YARP` is not already installed on your Windows machine, we recommend to install `YARP` using [**robotology-superbuild**](https://github.com/robotology/robotology-superbuild). 
+We rely on [**YARP**](https://www.yarp.it/latest/) for the use of **yarp-openvr**. If `YARP` is not already installed on your Windows machine, we recommend to install `YARP` using [**robotology-superbuild**](https://github.com/robotology/robotology-superbuild). 
 `robotology-superbuild` can be installed either from source or using binaries with its dependencies installed using Package environment system called **Conda** following the [**installation procedure here**](https://github.com/robotology/robotology-superbuild/blob/master/doc/install-mambaforge.md#windows).  Subsequently, robotology-superbuild can be installed from source or using binaries by following the [**installation procedure here**](https://github.com/robotology/robotology-superbuild/blob/master/doc/conda-forge.md#binary-installation).
 
 While following the installation procedure using Conda-forge based dependencies, you create an environment within which the packages are installed. 
@@ -39,7 +40,7 @@ mamba install -c conda-forge  git pkg-config
 ```
 
 
-# OpenVR and yarp-openvr-trackers
+# OpenVR and yarp-openvr
 
 ### Install OpenVR
 We install [**OpenVR**](https://github.com/ami-iit/openvr) using a custom fork from  [**ami-iit**](https://github.com/ami-iit) organization because of some custom patches from the original repository.
@@ -75,15 +76,15 @@ pkg-config --list-all
 and check for `openvr` in the list of packages displayed.
 
 
-### Install yarp-openvr-trackers
-We install [**yarp-openvr-trackers**](https://github.com/ami-iit/yarp-openvr-trackers)
+### Install yarp-openvr
+We install **yarp-openvr**
 
 ```
-git clone https://github.com/ami-iit/yarp-openvr-trackers.git
-cd yarp-openvr-trackers
+git clone https://github.com/ami-iit/yarp-openvr.git
+cd yarp-openvr
 mkdir build
 cd build
-cmake -G "Visual Studio 17 2022" -DCMAKE_INSTALL_PREFIX:PATH=<full-absolute-path-to-where-you-want-to-install-yarp-openvr-trackers> ..
+cmake -G "Visual Studio 17 2022" -DCMAKE_INSTALL_PREFIX:PATH=<full-absolute-path-to-where-you-want-to-install-yarp-openvr-> ..
 cmake --build . --config Release
 cmake --install . --config Release
 ```
