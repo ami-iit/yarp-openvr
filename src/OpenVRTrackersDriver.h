@@ -59,7 +59,6 @@ public:
     DevicesManager();
     ~DevicesManager();
 
-    bool valid() const;
     bool initialize(const TrackingUniverseOrigin& vrOrigin = TrackingUniverseOrigin::Seated);
     bool initialized() const;
 
