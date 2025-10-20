@@ -118,9 +118,18 @@ bool OpenVRTrackersModule::configure(yarp::os::ResourceFinder& rf)
 
     // Create configuration of the "transformClient" device
     yarp::os::Property tfClientCfg;
-    tfClientCfg.put("device", "transformClient");
-    tfClientCfg.put("local", tfLocal);
-    tfClientCfg.put("remote", tfRemote);
+    tfClientCfg.put(
+        "device",
+        rf.check("tfDevice", yarp::os::Value("frameTransformClient"))
+            .asString());
+    tfClientCfg.put(
+        "filexml_option",
+        rf.check("tfFile", yarp::os::Value("ftc_yarp_only.xml")).asString());
+    tfClientCfg.put("ft_client_prefix", "/" + name + "/tf");
+    if (rf.check("tfRemote")) {
+        tfClientCfg.put("ft_server_prefix", rf.find("tfRemote").asString());
+    }
+    tfClientCfg.put("local_rpc", "/" + name + "/tf/local_rpc");
 
     // Open the transformClient device
     if (!m_driver.open(tfClientCfg)) {
@@ -156,7 +165,7 @@ bool OpenVRTrackersModule::configure(yarp::os::ResourceFinder& rf)
 
     // Bind the RPC service to the module's object
     this->yarp().attachAsServer(this->m_rpcPort);
-    
+
     if(!m_rpcPort.open("/" + openvr_trackers_module::ModuleName +  + "/rpc"))
     {
         yError() << openvr_trackers_module::LogPrefix << "Could not open"
