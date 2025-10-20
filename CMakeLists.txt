@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
 
 project(
-    yarp-openvr-trackers
+    yarp-openvr
     LANGUAGES CXX C
-    VERSION 0.0.1)
+    VERSION 0.0.2)
 
 # C++ standard
 set(CMAKE_CXX_STANDARD 17)
