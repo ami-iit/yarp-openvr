@@ -69,10 +69,6 @@ find_package(YARP 3.4 COMPONENTS os sig dev math idl_tools REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(openvr REQUIRED IMPORTED_TARGET openvr)
 
-### Options
-# Shared/Dynamic or Static library?
-option(BUILD_SHARED_LIBS "Build libraries as shared as opposed to static" ON)
-
 # Enable RPATH support for installed binaries and libraries
 include(AddInstallRPATHSupport)
 add_install_rpath_support(
@@ -88,6 +84,12 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
         set_property(CACHE CMAKE_BUILD_TYPE PROPERTY VALUE "Release")
     endif()
 endif()
+
+# To facilitate the build of plugins, we set BUILD_SHARED_LIBS to OFF and
+# YARP_FORCE_DYNAMIC_PLUGINS to TRUE.
+set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Build libraries as shared as opposed to static")
+set(YARP_FORCE_DYNAMIC_PLUGINS TRUE CACHE INTERNAL "yarp-openvr is always built with dynamic plugins")
+yarp_configure_plugins_installation(yarp-openvr)
 
 ### Compile- and install-related commands.
 add_subdirectory(src)

@@ -1,1 +1,2 @@
 add_subdirectory(OpenVRTrackersModule)
+add_subdirectory(OpenVRCameraDevice)
