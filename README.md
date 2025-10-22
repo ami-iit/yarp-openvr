@@ -2,8 +2,7 @@
 
 YARP OpenVR project contains:
 - ``yarp-openvr-trackers`` that streams OpenVR based tracker poses over a YARP Frame Transform Server.
-
-
+- ``OpenVRCamera`` device that exposes the front facing camera of the VR headset as a YARP camera device.
 
 The installation and usage procedure was tested with Windows 10 OS.
 
@@ -19,24 +18,25 @@ This can be enabled by clicking on the `Modify` button in the installer correspo
 
 ### Install robotology-superbuild
 We rely on [**YARP**](https://www.yarp.it/latest/) for the use of **yarp-openvr**. If `YARP` is not already installed on your Windows machine, we recommend to install `YARP` using [**robotology-superbuild**](https://github.com/robotology/robotology-superbuild). 
-`robotology-superbuild` can be installed either from source or using binaries with its dependencies installed using Package environment system called **Conda** following the [**installation procedure here**](https://github.com/robotology/robotology-superbuild/blob/master/doc/install-mambaforge.md#windows).  Subsequently, robotology-superbuild can be installed from source or using binaries by following the [**installation procedure here**](https://github.com/robotology/robotology-superbuild/blob/master/doc/conda-forge.md#binary-installation).
+`robotology-superbuild` can be installed either from source or using binaries with its dependencies installed using Package environment system called **Conda** following the [**installation procedure here**](https://github.com/robotology/robotology-superbuild/blob/master/doc/install-miniforge.md#windows).
+Subsequently, `robotology-superbuild` can be installed from source or using binaries by following the [**installation procedure here**](https://github.com/robotology/robotology-superbuild/blob/master/doc/conda-forge.md#binary-installation).
 
 While following the installation procedure using Conda-forge based dependencies, you create an environment within which the packages are installed. 
 So everytime, we open a new terminal we need to activate this environment in order to access the installed dependencies and installed packages from the `robotology-superbuild`.
 Note that, if you have followed a Source-based installation in [**installation procedure here**](https://github.com/robotology/robotology-superbuild/blob/master/doc/conda-forge.md#binary-installation), your environment needs to be activated using,
 ```
-mamba activate robsub
+conda activate robsub
 ```
 while, if you have followed the binary installation procedure in [**installation procedure here**](https://github.com/robotology/robotology-superbuild/blob/master/doc/conda-forge.md#binary-installation), you have to use,
 ```
-mamba activate robotologyenv
+conda activate robotologyenv
 ```
 Note that this may not apply if you have installed `YARP` or `robotology-superbuild` following any other custom installation procedures.
 
 ### Other dependencies
 Install `git` and `PkgConfig`.
 ```
-mamba install -c conda-forge  git pkg-config
+conda install -c conda-forge  git pkg-config
 ```
 
 
@@ -44,10 +44,10 @@ mamba install -c conda-forge  git pkg-config
 
 ### Install OpenVR
 We install [**OpenVR**](https://github.com/ami-iit/openvr) using a custom fork from  [**ami-iit**](https://github.com/ami-iit) organization because of some custom patches from the original repository.
-We clone, build, and install  the repository from `fix_upstream` branch (which is the default branch of the fork).
+We clone, build, and install  the repository from `fix_upstream_oct_2025` branch (which is the default branch of the fork).
 
 ```
-git clone -b fix_upstream https://github.com/ami-iit/openvr
+git clone -b fix_upstream_oct_2025 https://github.com/ami-iit/openvr
 cd openvr
 mkdir build
 cd build
@@ -65,7 +65,7 @@ cmake --install . --config Release
 
 ### Add OpenVR package to Package Configuration Path
 To have OpenVR installation to be identified by CMake, we  need to add it to the package configuration path.
-This can be done from the terminal after activating the `mamba` environment by,
+This can be done from the terminal after activating the `conda` environment by,
 ```
 set PKG_CONFIG_PATH=%PKG_CONFIG_PATH%;<path_to_openvr-install-location>/share/pkgconfig
 ```
@@ -152,8 +152,14 @@ From SteamVR, it is possible to assign a "role" to a tracker via the "Manage Tra
 In the images above, the trackers were positioned as follows: 
 ![image](https://user-images.githubusercontent.com/18591940/164016928-7d15681c-3967-4cf0-8d54-88e3080a1267.png)
 
+## Running the OpenVRCamera device
+The `OpenVRCamera` device exposes the front facing camera of the VR headset as a YARP camera device. Assuming to have ``yarpserver`` running, the device can be started with the following command:
+```
+yarpdev --device OpenVRCamera
+```
 
-
-
-
-
+It is automatically wrapped by a ``frameGrabber_nws_yarp``, so you can check the ``frameGrabber_nws_yarp`` parameters to change the 
+port name or the streaming frequency, for example:
+```
+yarpdev --device OpenVRCamera --period 0.033 --name /openvr/camera
+```
