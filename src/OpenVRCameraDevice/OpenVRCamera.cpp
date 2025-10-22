@@ -13,7 +13,8 @@
 
 #include < openvr.h>
 
-// Adapted from https://github.com/ValveSoftware/openvr/blob/91825305130f446f82054c1ec3d416321ace0072/samples/tracked_camera_openvr_sample/tracked_camera_openvr_sample.cpp
+// Adapted from
+// https://github.com/ValveSoftware/openvr/blob/91825305130f446f82054c1ec3d416321ace0072/samples/tracked_camera_openvr_sample/tracked_camera_openvr_sample.cpp
 
 YARP_DECLARE_LOG_COMPONENT(CAMERA)
 YARP_LOG_COMPONENT(CAMERA, "yarp.device.OpenVRCamera")
@@ -26,8 +27,8 @@ struct yarp::dev::OpenVRCamera::Impl
 
     std::string HMDSerialNumberString;
 
-    uint32_t nCameraFrameWidth;
-    uint32_t nCameraFrameHeight;
+    uint32_t nCameraFrameWidth{0};
+    uint32_t nCameraFrameHeight{0};
     uint32_t nCameraFrameBufferSize;
     uint8_t* pCameraFrameBuffer;
     uint32_t nLastFrameSequence;
@@ -142,6 +143,8 @@ bool yarp::dev::OpenVRCamera::open(yarp::os::Searchable& config)
         return false;
     }
 
+    yCInfo(CAMERA) << "OpenVRCamera device ready.";
+
     return true;
 }
 
@@ -163,9 +166,10 @@ bool yarp::dev::OpenVRCamera::close()
 bool yarp::dev::OpenVRCamera::getImage(
     yarp::sig::ImageOf<yarp::sig::PixelRgb>& image)
 {
-    if (!pImpl->pVRTrackedCamera || !pImpl->hTrackedCamera)
-        //TODO error message
+    if (!pImpl->pVRTrackedCamera || !pImpl->hTrackedCamera) {
+        yCError(CAMERA) << "getImage() called before camera has been opened.";
         return false;
+    }
 
     // get the frame header only
     vr::CameraVideoStreamFrameHeader_t frameHeader;
@@ -177,13 +181,17 @@ bool yarp::dev::OpenVRCamera::getImage(
             0,
             &frameHeader,
             sizeof(frameHeader));
-    if (nCameraError != vr::VRTrackedCameraError_None)
-        // TODO error message
+
+    if (nCameraError != vr::VRTrackedCameraError_None) {
+        yCError(CAMERA)
+            << "GetVideoStreamFrameBuffer() Failed to get frame header. Error:"
+            << pImpl->pVRTrackedCamera->GetCameraErrorNameFromEnum(
+                   nCameraError);
         return false;
+    }
 
     if (frameHeader.nFrameSequence == pImpl->nLastFrameSequence) {
-        // frame hasn't changed yet, nothing to do
-        // TODO error message
+        yCWarning(CAMERA) << "No new frame available.";
         return false;
     }
 
@@ -195,28 +203,37 @@ bool yarp::dev::OpenVRCamera::getImage(
         pImpl->nCameraFrameBufferSize,
         &frameHeader,
         sizeof(frameHeader));
-    if (nCameraError != vr::VRTrackedCameraError_None)
-        // TODO error message
+
+    if (nCameraError != vr::VRTrackedCameraError_None) {
+        yCError(CAMERA)
+            << "GetVideoStreamFrameBuffer() Failed to get frame buffer. Error:"
+            << pImpl->pVRTrackedCamera->GetCameraErrorNameFromEnum(
+                   nCameraError);
         return false;
+    }
 
     pImpl->nLastFrameSequence = frameHeader.nFrameSequence;
 
-    // TODO convert the frame buffer to YARP image
-    //pImpl->pCameraPreviewImage->SetFrameImage(pImpl->pCameraFrameBuffer,
-    //                                     pImpl->nCameraFrameWidth,
-    //                                     pImpl->nCameraFrameHeight,
-    //                                     &frameHeader);
+    image.resize(pImpl->nCameraFrameWidth, pImpl->nCameraFrameHeight);
+    const uint8_t* pFrameImage = pImpl->pCameraFrameBuffer;
+    for (uint32_t y = 0; y < pImpl->nCameraFrameHeight; y++) {
+        for (uint32_t x = 0; x < pImpl->nCameraFrameWidth; x++) {
+            image.pixel(x, y).r = pFrameImage[0];
+            image.pixel(x, y).g = pFrameImage[1];
+            image.pixel(x, y).b = pFrameImage[2];
+            pFrameImage += 4; // advance by 4 bytes (RGBA)
+        }
+    }
+
     return true;
 }
 
 int yarp::dev::OpenVRCamera::height() const
 {
-    //TODO
-    return 0;
+    return pImpl->nCameraFrameHeight;
 }
 
 int yarp::dev::OpenVRCamera::width() const
 {
-    // TODO
-    return 0;
+    return pImpl->nCameraFrameWidth;
 }
