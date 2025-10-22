@@ -218,9 +218,9 @@ bool yarp::dev::OpenVRCamera::getImage(
     const uint8_t* pFrameImage = pImpl->pCameraFrameBuffer;
     for (uint32_t y = 0; y < pImpl->nCameraFrameHeight; y++) {
         for (uint32_t x = 0; x < pImpl->nCameraFrameWidth; x++) {
-            image.pixel(x, y).r = pFrameImage[0];
-            image.pixel(x, y).g = pFrameImage[1];
-            image.pixel(x, y).b = pFrameImage[2];
+            image.pixel(x, y).r = pFrameImage[3] > 0 ? pFrameImage[0] : 0;
+            image.pixel(x, y).g = pFrameImage[3] > 0 ? pFrameImage[1] : 0;
+            image.pixel(x, y).b = pFrameImage[3] > 0 ? pFrameImage[2] : 0;
             pFrameImage += 4; // advance by 4 bytes (RGBA)
         }
     }
