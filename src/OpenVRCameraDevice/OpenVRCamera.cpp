@@ -11,7 +11,7 @@
 #include "OpenVRCamera.h"
 #include <yarp/os/LogStream.h>
 
-#include < openvr.h>
+#include <openvr.h>
 
 // Adapted from
 // https://github.com/ValveSoftware/openvr/blob/91825305130f446f82054c1ec3d416321ace0072/samples/tracked_camera_openvr_sample/tracked_camera_openvr_sample.cpp
